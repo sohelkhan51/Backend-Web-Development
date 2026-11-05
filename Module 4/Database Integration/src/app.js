@@ -1,7 +1,10 @@
+require('dotenv').config();
+
 const express = require('express');
 const postController = require('./controllers/postController');
 
 const app = express();
+
 app.use(express.json());
 
 app.get('/posts', postController.list);
@@ -11,11 +14,15 @@ app.patch('/posts/:id', postController.update);
 app.delete('/posts/:id', postController.remove);
 
 app.use((error, req, res, next) => {
-  res.status(error.statusCode || 500).json({ error: error.message });
+  res.status(error.statusCode || 500).json({
+    error: error.statusCode ? error.message : 'Internal server error',
+  });
 });
 
 if (require.main === module) {
-  app.listen(process.env.PORT || 3000, () => console.log('API listening'));
+  app.listen(process.env.PORT || 3000, () => {
+    console.log('API listening');
+  });
 }
 
 module.exports = app;
